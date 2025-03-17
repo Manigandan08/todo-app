@@ -1,4 +1,14 @@
+import {
+  Button,
+  Checkbox,
+  Input,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useState } from "react";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
 
 export default function TodoApp() {
   const [Alltodos, setAlltodos] = useState([]);
@@ -47,36 +57,70 @@ export default function TodoApp() {
     <div>
       <h1>Todo List</h1>
       <div>
-        <input type="text" value={Todo.task} onChange={HandleChange} />
-        <button onClick={AddTodo}>Add</button>
-        <button onClick={deleteall}>Delete All</button>
+        <TextField
+          variant="outlined"
+          size="small"
+          style={{ marginRight: "10px" }}
+          type="text"
+          value={Todo.task}
+          onChange={HandleChange}
+        />
+        <Button variant="contained" size="medium" onClick={AddTodo}>
+          Add
+        </Button>
+        <Button
+          variant="outlined"
+          style={{ marginLeft: "3px" }}
+          onClick={deleteall}
+        >
+          Delete All
+        </Button>
 
         <div>
           {" "}
           <h1>List of TODO's</h1>
-          <ul>
+          <List>
             {Alltodos.map((val) => (
               <div key={val.id}>
-                <li>
-                  <input
-                    type="checkbox"
-                    onChange={() => {
-                      HandleToggle(val.id);
-                    }}
-                    checked={val.isComplete}
-                  ></input>
-                  <span
-                    style={
-                      val.isComplete ? { textDecoration: "line-through" } : {}
-                    }
-                  >
-                    {val.task}
-                  </span>
-                  <button onClick={() => Handledelete(val.id)}>Delete</button>
-                </li>
+                <ListItem>
+                  <Stack direction="row" marginBottom="5px" textAlign="center">
+                    <Checkbox
+                      type="checkbox"
+                      onChange={() => {
+                        HandleToggle(val.id);
+                      }}
+                      checked={val.isComplete}
+                    ></Checkbox>
+                    <Typography
+                      variant="h6"
+                      style={
+                        val.isComplete
+                          ? {
+                              textDecoration: "line-through",
+                              marginTop: "3px",
+                              marginRight: "5px",
+                              marginLeft: "5px",
+                            }
+                          : {
+                              marginTop: "3px",
+                              marginRight: "5px",
+                              marginLeft: "5px",
+                            }
+                      }
+                    >
+                      {val.task}
+                    </Typography>
+                    <Button
+                      variant="outlined"
+                      onClick={() => Handledelete(val.id)}
+                    >
+                      Delete
+                    </Button>
+                  </Stack>
+                </ListItem>
               </div>
             ))}
-          </ul>
+          </List>
         </div>
       </div>
     </div>
