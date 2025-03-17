@@ -50,8 +50,10 @@ export default function TodoApp() {
         <input type="text" value={Todo.task} onChange={HandleChange} />
         <button onClick={AddTodo}>Add</button>
         <button onClick={deleteall}>Delete All</button>
+
         <div>
           {" "}
+          <h1>List of TODO's</h1>
           <ul>
             {Alltodos.map((val) => (
               <div key={val.id}>
