@@ -12,11 +12,25 @@ import ListItem from "@mui/material/ListItem";
 
 export default function TodoApp() {
   const [Alltodos, setAlltodos] = useState([]);
+  const [currentTask, setcurrentTask] = useState({});
   const [Todo, setTodo] = useState({
     id: Date.now(),
     task: "",
     isComplete: false,
+    isEditing: false,
   });
+
+  const AddTodo = () => {
+    if (Todo.task.trim() !== "") {
+      setAlltodos([...Alltodos, Todo]);
+      setTodo({
+        id: Date.now(),
+        task: "",
+        isComplete: false,
+        isEditing: false,
+      });
+    }
+  };
 
   const HandleChange = (e) => {
     {
@@ -32,17 +46,6 @@ export default function TodoApp() {
     );
   };
 
-  const AddTodo = () => {
-    if (Todo.task.trim() !== "") {
-      setAlltodos([...Alltodos, Todo]);
-      setTodo({
-        id: Date.now(),
-        task: "",
-        isComplete: false,
-      });
-    }
-  };
-
   const Handledelete = (id) => {
     setAlltodos(Alltodos.filter((todo) => todo.id !== id));
   };
@@ -51,7 +54,40 @@ export default function TodoApp() {
     setAlltodos([]);
   };
 
-  console.log(Alltodos);
+  const HandleEdit = (id) => {
+    const beforeupdate = Alltodos.find((todo) => todo.id === id);
+    setcurrentTask({ ...currentTask, [id]: beforeupdate.task });
+    setAlltodos(
+      Alltodos.map((todo) =>
+        todo.id === id ? { ...todo, isEditing: true } : todo
+      )
+    );
+  };
+
+  const HandleSave = (id) => {
+    setAlltodos(
+      Alltodos.map((todo) =>
+        todo.id === id ? { ...todo, isEditing: false } : todo
+      )
+    );
+  };
+
+  const HandleCancel = (id) => {
+    setAlltodos(
+      Alltodos.map((todo) =>
+        todo.id === id
+          ? { ...todo, task: currentTask[id], isEditing: false }
+          : todo
+      )
+    );
+  };
+
+  console.log(currentTask);
+  const HandleEditChange = (id, value) => {
+    setAlltodos(
+      Alltodos.map((todo) => (todo.id === id ? { ...todo, task: value } : todo))
+    );
+  };
 
   return (
     <div>
@@ -80,46 +116,86 @@ export default function TodoApp() {
           {" "}
           <h1>List of TODO's</h1>
           <List>
-            {Alltodos.map((val) => (
-              <div key={val.id}>
-                <ListItem>
-                  <Stack direction="row" marginBottom="5px" textAlign="center">
-                    <Checkbox
-                      type="checkbox"
-                      onChange={() => {
-                        HandleToggle(val.id);
-                      }}
-                      checked={val.isComplete}
-                    ></Checkbox>
-                    <Typography
-                      variant="h6"
-                      style={
-                        val.isComplete
-                          ? {
-                              textDecoration: "line-through",
-                              marginTop: "3px",
-                              marginRight: "5px",
-                              marginLeft: "5px",
-                            }
-                          : {
-                              marginTop: "3px",
-                              marginRight: "5px",
-                              marginLeft: "5px",
-                            }
-                      }
+            {Alltodos.map((val) =>
+              val.isEditing ? (
+                <div key={val.id}>
+                  <TextField
+                    variant="outlined"
+                    size="small"
+                    style={{ marginRight: "10px" }}
+                    type="text"
+                    value={val.task}
+                    onChange={(e) => HandleEditChange(val.id, e.target.value)}
+                  />
+                  <Button
+                    size="small"
+                    variant="contained"
+                    onClick={() => HandleSave(val.id)}
+                    style={{ marginRight: "5px" }}
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => HandleCancel(val.id)}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              ) : (
+                <div key={val.id}>
+                  <ListItem>
+                    <Stack
+                      direction="row"
+                      marginBottom="5px"
+                      textAlign="center"
                     >
-                      {val.task}
-                    </Typography>
-                    <Button
-                      variant="outlined"
-                      onClick={() => Handledelete(val.id)}
-                    >
-                      Delete
-                    </Button>
-                  </Stack>
-                </ListItem>
-              </div>
-            ))}
+                      <Checkbox
+                        type="checkbox"
+                        onChange={() => {
+                          HandleToggle(val.id);
+                        }}
+                        checked={val.isComplete}
+                      ></Checkbox>
+                      <Typography
+                        variant="h6"
+                        style={
+                          val.isComplete
+                            ? {
+                                textDecoration: "line-through",
+                                marginTop: "3px",
+                                marginRight: "5px",
+                                marginLeft: "5px",
+                              }
+                            : {
+                                marginTop: "3px",
+                                marginRight: "5px",
+                                marginLeft: "5px",
+                              }
+                        }
+                      >
+                        {val.task}
+                      </Typography>
+                      <Button
+                        size="small"
+                        variant="contained"
+                        style={{ marginRight: "5px" }}
+                        onClick={() => HandleEdit(val.id)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        onClick={() => Handledelete(val.id)}
+                      >
+                        Delete
+                      </Button>
+                    </Stack>
+                  </ListItem>
+                </div>
+              )
+            )}
           </List>
         </div>
       </div>
